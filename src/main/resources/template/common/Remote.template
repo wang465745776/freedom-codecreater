@@ -1,0 +1,74 @@
+package ${remotePackage};
+
+import java.util.List;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import ${beanPackage}.${beanName};
+
+/**
+ * ${remoteComment}
+ * @author ${author}
+ * @date ${dateTime}
+ * @version ${version}
+ */
+@RemoteServiceRelativePath("${remoteName}")
+public interface ${remoteName} extends RemoteService {
+
+	public static class Util {
+		private static ${remoteAsyncName} instance;
+
+		public static ${remoteAsyncName} getInstance() {
+			if (instance == null) {
+				instance = GWT.create(${remoteName}.class);
+				ServiceDefTarget target = (ServiceDefTarget) instance;
+				target.setServiceEntryPoint(GWT.getModuleBaseURL() + "${remoteName}");
+			}
+			return instance;
+		}
+	}
+
+	/**
+	 * ${moduleName_C}-查询
+	 * @param args 查询标志
+	 * @param bean 查询参数
+	 * @return
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public List<${beanName}> get${<fu>objectName}(String[] args, ${beanName} bean);
+
+	/**
+	 * ${moduleName_C}-新增
+	 * @param bean 新增参数
+	 * @return
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public ${beanName} add${<fu>objectName}(${beanName} bean);
+
+	/**
+	 * ${moduleName_C}-修改
+	 * @param bean 修改参数
+	 * @return
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public ${beanName} update${<fu>objectName}(${beanName} bean);
+
+	/**
+	 * ${moduleName_C}-删除
+	 * @param bean 删除参数
+	 * @return
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public ${beanName} delete${<fu>objectName}(${beanName} bean);
+
+}

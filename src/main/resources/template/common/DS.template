@@ -1,0 +1,193 @@
+package ${DSPackage};
+
+import java.util.List;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.data.DSRequest;
+import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.rpc.RPCResponse;
+import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.wpams.client.common.FormWait;
+import ${remotePackage}.${remoteName};
+import ${beanPackage}.${beanName};
+
+/**
+ * ${DSComment}
+ * @author ${author}
+ * @date ${dateTime}
+ * @version ${version}
+ */
+public class ${DSName} extends ${DS_BaseName} {
+	private static ${DSName} instance = null;
+	private static String[] _args = null;
+	private static ${beanName} _bean;
+
+	/**
+	 * 此方法返回${moduleName_C}数据源实例
+	 * @param args 查询标记
+	 * @param bean 查询参数
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public static ${DSName} getInstance(String[] args, ${beanName} bean) {
+		_args = args;
+		_bean = bean;
+
+		if (instance == null) {
+			instance = new ${DSName}("${DSName}");
+		}
+
+		return instance;
+	}
+
+	/**
+	 * 此方法为${moduleName_C}的数据源构造方法
+	 * @param id 数据源ID
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public ${DSName}(String id) {
+		super(id);
+	}
+
+	@Override
+	protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+		${remoteName}.Util.getInstance().get${<fu>objectName}(_args, _bean, new AsyncCallback<List<${beanName}>>() {
+			@Override
+			public void onSuccess(List<${beanName}> result) {
+				if (result.size() > 0 && result.get(0).getOpStatus() == 1) {
+					SC.say(result.get(0).getOpMessage());
+					response.setData(new ListGridRecord[0]);
+					response.setTotalRows(0);
+					processResponse(requestId, response);
+					return;
+				}
+				ListGridRecord[] records = new ListGridRecord[result.size()];
+				for (int i = 0; i < result.size(); i++) {
+					ListGridRecord record = new ListGridRecord();
+					bean2Record(result.get(i), record);
+					records[i] = record;
+				}
+				response.setData(records);
+				response.setStartRow(0);
+				response.setEndRow(result.size());
+				response.setTotalRows(result.size());
+				processResponse(requestId, response);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				FormWait.destroy();
+				scSayRemoteFailure(caught);
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+			}
+		});
+	}
+
+	@Override
+	protected void executeAdd(final String requestId, DSRequest request, final DSResponse response) {
+		JavaScriptObject data = request.getData();
+		ListGridRecord record = new ListGridRecord(data);
+		${beanName} bean = new ${beanName}();
+		record2Bean(record, bean);
+
+		${remoteName}.Util.getInstance().add${<fu>objectName}(bean, new AsyncCallback<${beanName}>() {
+			@Override
+			public void onSuccess(${beanName} result) {
+				FormWait.destroy();
+				if (result.getOpStatus() == 1) {
+					SC.say(result.getOpMessage());
+					return;
+				}
+
+				ListGridRecord record = new ListGridRecord();
+				bean2Record(result, record);
+
+				response.setData(record);
+				response.setStartRow(0);
+				response.setEndRow(1);
+				response.setTotalRows(1);
+				processResponse(requestId, response);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				FormWait.destroy();
+				scSayRemoteFailure(caught);
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+			}
+		});
+	}
+
+	@Override
+	protected void executeUpdate(final String requestId, DSRequest request, final DSResponse response) {
+		JavaScriptObject data = request.getData();
+		ListGridRecord record = new ListGridRecord(data);
+		${beanName} bean = new ${beanName}();
+		record2Bean(record, bean);
+
+		${remoteName}.Util.getInstance().update${<fu>objectName}(bean, new AsyncCallback<${beanName}>() {
+			@Override
+			public void onSuccess(${beanName} result) {
+				FormWait.destroy();
+				if (result.getOpStatus() == 1) {
+					SC.say(result.getOpMessage());
+					return;
+				}
+
+				ListGridRecord record = new ListGridRecord();
+				bean2Record(result, record);
+
+				response.setData(record);
+				processResponse(requestId, response);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				FormWait.destroy();
+				scSayRemoteFailure(caught);
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+			}
+		});
+	}
+
+	@Override
+	protected void executeRemove(final String requestId, DSRequest request, final DSResponse response) {
+		JavaScriptObject data = request.getData();
+		ListGridRecord record = new ListGridRecord(data);
+		${beanName} bean = new ${beanName}();
+		record2Bean(record, bean);
+
+		${remoteName}.Util.getInstance().delete${<fu>objectName}(bean, new AsyncCallback<${beanName}>() {
+			@Override
+			public void onSuccess(${beanName} result) {
+				FormWait.destroy();
+				if (result.getOpStatus() == 1) {
+					SC.say(result.getOpMessage());
+					return;
+				}
+
+				ListGridRecord record = new ListGridRecord();
+				bean2Record(result, record);
+
+				response.setData(record);
+				processResponse(requestId, response);
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				FormWait.destroy();
+				scSayRemoteFailure(caught);
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+			}
+		});
+	}
+}

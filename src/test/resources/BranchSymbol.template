@@ -1,0 +1,4 @@
+*(haha)<u>
+	public String sayHello(String name) {
+		return "Hello " + name;
+	}

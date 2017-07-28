@@ -1,0 +1,84 @@
+package ${DS_BasePackage};
+
+import com.smartgwt.client.data.DSRequest;
+import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.DataSourceField;
+import com.smartgwt.client.types.FieldType;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
+import ${beanPackage}.${beanName};
+
+/**
+ * ${DS_BaseComment}
+ * @author ${author}
+ * @date ${dateTime}
+ * @version ${version}
+ */
+public class ${DS_BaseName} extends DataSourceBase {
+
+	/**
+	 * 此方法为${moduleName_C}的数据源基础类的构造方法
+	 * @param id 数据源ID
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public ${DS_BaseName}(String id) {
+		setID(id);
+
+#{*(columns)		DataSourceField ?{currentColumn}?Field = getDataSourceField("?{<l>currentColumn}?", FieldType.TEXT, "?{columnDescription}?", ?{columnLength}?, false, false);
+		addField(?{currentColumn}?Field);
+		
+}#	}
+
+	/**
+	 * 调用此方法把Bean里面的数据保存到Record中
+	 * @param bean
+	 * @param record
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public static void bean2Record(${beanName} bean, ListGridRecord record) {
+#{*(columns)		record.setAttribute("?{<l>currentColumn}?", bean.get?{<fu>currentColumn}?());
+}#		record.setAttribute("rsRows", bean.getRsRows());
+		record.setAttribute("opstatus", bean.getOpStatus());
+		record.setAttribute("opmessage", bean.getOpMessage());
+	}
+
+	/**
+	 * 调用此方法把Record里面的数据保存到Bean中
+	 * @param record
+	 * @param bean
+	 * @author ${author}
+	 * @date ${dateTime}
+	 * @version ${version}
+	 */
+	public static boolean record2Bean(ListGridRecord record,${beanName} bean) {
+		try {
+#{*(columns)			bean.set?{<fu>currentColumn}?(getAttributeAsString(record, "?{<l>currentColumn}?"));
+}#
+			bean.setOpStatus(getAttributeAsInt(record, "opstatus"));
+			bean.setOpMessage(getAttributeAsString(record, "opmessage"));
+			return true;
+		} catch (Exception e) {
+			scSayDsError(e);
+			return false;
+		}
+	}
+
+	@Override
+	protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+	}
+
+	@Override
+	protected void executeAdd(final String requestId, DSRequest request, final DSResponse response) {
+	}
+
+	@Override
+	protected void executeUpdate(final String requestId, DSRequest request, final DSResponse response) {
+	}
+
+	@Override
+	protected void executeRemove(final String requestId, DSRequest request, final DSResponse response) {
+	}
+}

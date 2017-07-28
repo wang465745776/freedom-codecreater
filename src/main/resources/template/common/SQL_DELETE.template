@@ -1,0 +1,29 @@
+USE ${dbName}
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		${author}
+-- Create date: ${dateTime}
+-- Description:	${SQL_DELETEDescription}
+-- =============================================
+CREATE PROCEDURE ${SQL_DELETEName}
+#{*(columns)@(dl)    @?{columnName}? VARCHAR(?{columnLength}?) ,
+}#AS
+    BEGIN
+        SET NOCOUNT ON;
+
+		-- 修改${<l>objectName}信息
+        UPDATE  dbo.${tableName}
+        SET     isdel = 1,
+#{*(columns)@(dl)        		?{columnName}? = @?{columnName}? ,
+}#        WHERE   kid = @kid;
+
+		-- 获取删除的${<l>objectName}信息
+        SELECT  *
+        FROM    dbo.${tableName} ${<l,f>tableName}
+        WHERE   ${<l,f>tableName}.kid = @kid;
+    END

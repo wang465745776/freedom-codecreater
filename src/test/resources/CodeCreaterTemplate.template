@@ -1,0 +1,14 @@
+package com.wanggt.freedom.codecreater.core;
+
+/**
+ * 这是一个测试模板
+ * @author ${author}
+ * @date 2017年6月23日下午4:23:41
+ * @since ${version}
+ */
+public class CodeCreaterTemplate {
+%{*(@java@${haha})<u>
+	public String sayHello(String name) {
+		return "Hello " + name;
+	}
+}%}
