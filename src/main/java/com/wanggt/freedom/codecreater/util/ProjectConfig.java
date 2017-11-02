@@ -24,7 +24,7 @@ public class ProjectConfig {
 	private static Properties customProperties;
 
 	static {
-		InputStream projectConfigFile = ProjectConfig.class.getResourceAsStream("/project.properties");
+		InputStream projectConfigFile = ProjectConfig.class.getResourceAsStream("/codecreater.properties");
 
 		projectProperties = new Properties();
 		try {
