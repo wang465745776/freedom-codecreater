@@ -22,6 +22,7 @@ import com.wanggt.freedom.codecreater.core.operate.RemoveUnderlineOperate;
 import com.wanggt.freedom.codecreater.core.operate.UpperCaseOperate;
 import com.wanggt.freedom.codecreater.core.output.ConsoleOutput;
 import com.wanggt.freedom.codecreater.core.output.Output;
+import com.wanggt.freedom.codecreater.core.parser.TemplateParser;
 import com.wanggt.freedom.codecreater.core.symbol.BranchSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.LoopSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.ReplaceSymbol;
@@ -31,7 +32,9 @@ import com.wanggt.freedom.codecreater.util.IOUtil;
 import com.wanggt.freedom.codecreater.util.ProjectConfig;
 
 /**
- * 代码生成器
+ * 代码生成器。<br>
+ * 
+ * 此类为此代码生成器的核心，是使用这个代码生成器所重要的类。
  * @author freedom wang
  * @date 2017年6月21日上午9:22:59
  * @since 1.0
@@ -139,6 +142,15 @@ public class CodeCreater {
 		}
 	}
 
+	/**
+	 * 调用此方法生成代码
+	 * @param templateStream
+	 * @param params
+	 * @throws IOException
+	 * @author freedom wang
+	 * @date 2018年4月12日下午11:09:06
+	 * @version 1.0
+	 */
 	public void createCode(InputStream templateStream, Object[] params) throws IOException {
 		// 传入的可以是Properties对象，可以是JavaBean，JavaBean必须要使用注解标注
 		paramParser.setParams(params);
@@ -154,6 +166,16 @@ public class CodeCreater {
 		}
 	}
 
+	/**
+	 * 调用此方法生成代码
+	 * @param templateStream
+	 * @param properties
+	 * @param params
+	 * @throws IOException
+	 * @author freedom wang
+	 * @date 2018年4月12日下午11:09:13
+	 * @version 1.0
+	 */
 	public void createCode(InputStream templateStream, Properties[] properties, Object[] params) throws IOException {
 		// 传入的可以是Properties对象，可以是JavaBean，JavaBean必须要使用注解标注
 		paramParser.setProperties(properties);

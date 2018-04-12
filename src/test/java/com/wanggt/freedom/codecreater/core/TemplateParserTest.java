@@ -3,6 +3,9 @@ package com.wanggt.freedom.codecreater.core;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.wanggt.freedom.codecreater.core.parser.TemplateBean;
+import com.wanggt.freedom.codecreater.core.parser.TemplateParser;
+
 public class TemplateParserTest {
 
 	@Test
