@@ -8,8 +8,8 @@
 	<description>代码生成器用于自动生成模块相关类</description>
 
 	<properties>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<!-- 单元测试jUint的版本 -->
 		<junit.version>4.11</junit.version>
