@@ -26,6 +26,7 @@ import com.wanggt.freedom.codecreater.core.parser.TemplateParser;
 import com.wanggt.freedom.codecreater.core.symbol.BranchSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.LoopSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.ReplaceSymbol;
+import com.wanggt.freedom.codecreater.core.symbol.SetSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.Symbol;
 import com.wanggt.freedom.codecreater.param.ParamParser;
 import com.wanggt.freedom.codecreater.util.IOUtil;
@@ -85,11 +86,12 @@ public class CodeCreater {
 		operates.add(new FirstCharOperate());
 		operates.add(new RemoveUnderlineOperate());
 
-		// 默认注册分支、循环、替换三种标记
+		// 默认注册分支、循环、替换、变量三种标记
 		symbols = new ArrayList<Symbol>();
 		symbols.add(new BranchSymbol());
 		symbols.add(new LoopSymbol());
 		symbols.add(new ReplaceSymbol());
+		symbols.add(new SetSymbol());
 
 		// 默认注册输出方式
 		outputs = new ArrayList<Output>();

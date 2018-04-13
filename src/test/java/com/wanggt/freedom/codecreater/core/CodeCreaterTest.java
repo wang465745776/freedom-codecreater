@@ -19,7 +19,9 @@ public class CodeCreaterTest {
 		properties.load(propertiesStream);
 
 		CodeCreaterTestBean bean = new CodeCreaterTestBean();
-		bean.setAuthor("dfsadf");
+		bean.setAuthor("freedom");
+		
+		bean.setStudents(new Student[] {new Student("freedom"),new Student("Tom")});
 
 		// 创建一个代码生成器
 		CodeCreater codeCreater = new CodeCreater();

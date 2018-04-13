@@ -1,3 +1,5 @@
+##set       age=26                         set##
+##set       message="Hello World"          set##
 package com.wanggt.freedom.codecreater.core;
 
 /**
@@ -7,8 +9,12 @@ package com.wanggt.freedom.codecreater.core;
  * @since ${version}
  */
 public class CodeCreaterTemplate {
-%{*(@java@${haha})<u>
+%{*(@java@${haha})
 	public String sayHello(String name) {
-		return "Hello " + name;
+		return ${message};
 	}
 }%}
+##loop*(students)
+	private String ?{name}?;
+loop##
+${age}

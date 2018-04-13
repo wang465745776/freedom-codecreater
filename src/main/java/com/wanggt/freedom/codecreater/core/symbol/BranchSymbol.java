@@ -9,6 +9,7 @@ import com.wanggt.freedom.codecreater.core.ValueOperate;
 import com.wanggt.freedom.codecreater.core.observer.HasOperate;
 import com.wanggt.freedom.codecreater.core.observer.HasParamParser;
 import com.wanggt.freedom.codecreater.core.operate.Operate;
+import com.wanggt.freedom.codecreater.core.parser.TemplateBean;
 import com.wanggt.freedom.codecreater.core.parser.TemplateParser;
 import com.wanggt.freedom.codecreater.param.ParamParser;
 import com.wanggt.freedom.codecreater.util.ProjectConfig;
@@ -80,8 +81,8 @@ public class BranchSymbol implements Symbol, HasOperate, HasParamParser {
 	}
 
 	@Override
-	public String parse(String code) {
-		String processCode = code;
+	public String parse(TemplateBean templateBean) {
+		String processCode = templateBean.getCode();
 		String returnCode = "";
 
 		if (processCode != null && !processCode.equals("")) {
@@ -132,10 +133,10 @@ public class BranchSymbol implements Symbol, HasOperate, HasParamParser {
 					}
 				}
 			} else {
-				logger.warn("定义了一个分支语句，但是没有提供判断参数，默认忽略此语句,分支语句为:{}", code);
+				logger.warn("定义了一个分支语句，但是没有提供判断参数，默认忽略此语句,分支语句为:{}", templateBean.getCode());
 			}
 		} else {
-			logger.warn("定义了一个分支语句，但是内容是空，默认忽略此语句,code:{}", code);
+			logger.warn("定义了一个分支语句，但是内容是空，默认忽略此语句,code:{}", templateBean.getCode());
 		}
 
 		return returnCode.toString();

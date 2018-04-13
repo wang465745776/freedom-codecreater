@@ -1,10 +1,12 @@
 package com.wanggt.freedom.codecreater.core.parser;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wanggt.freedom.codecreater.core.symbol.ParamSymbol;
 import com.wanggt.freedom.codecreater.core.symbol.Symbol;
 
 /**
@@ -19,36 +21,29 @@ public class TemplateParser {
 
 	/**
 	 * 解析模板代码
-	 * @param code
-	 * @param symbols
-	 * @return
+	 * @param code 待解析模板代码
+	 * @param symbols 标记集
+	 * @return 已解析代码
 	 * @author freedom wang
 	 * @date 2017年6月21日上午9:56:06
 	 * @since 1.0
 	 */
 	public static String analyzeTemplate(String code, List<Symbol> symbols) {
-		StringBuffer analyticalCode = new StringBuffer(code);// 解析得到的代码
+		StringBuffer analyticalCode = new StringBuffer(code);// 解析过程变量
+		TemplateBean rootTemplate = new TemplateBean(); // 根模板对象
 
 		try {
+			// 循环所有的模板代码
 			while (hasTemplateCode(analyticalCode.toString(), symbols)) {
+				// 获取模板对象
 				TemplateBean templateBean = getFirstTemplateSymbol(analyticalCode.toString(), symbols);
 
-				String templateCode = templateBean.getCode();
+				// 解析模板对象
+				String parsedCode = parseTemplate(rootTemplate, templateBean, symbols);
 
-				// 考虑多层模板嵌套的情况，使用递归进行处理
-				if (hasTemplateCode(templateCode, symbols)) {
-					templateCode = analyzeTemplate(templateCode, symbols);
-				}
-
-				// 根据不同的模板符号进行不同的处理
-				for (Symbol oneSymbol : symbols) {
-					if (oneSymbol.getSymbolStart().equals(templateBean.getStartSymbol())) {
-						String parsedCode = oneSymbol.parse(templateCode);
-
-						analyticalCode.replace(templateBean.getStartIndex(),
-								templateBean.getEndIndex() + templateBean.getEndSymbol().length(), parsedCode);
-					}
-				}
+				// 替换模板代码
+				analyticalCode.replace(templateBean.getStartIndex(),
+						templateBean.getEndIndex() + templateBean.getEndSymbol().length(), parsedCode);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -58,10 +53,87 @@ public class TemplateParser {
 	}
 
 	/**
-	 * 获取代码中的模板代码及其位置
+	 * 解析模板對象
+	 * @param templateBean
+	 * @author freedom wang
+	 * @date 2018年4月13日上午9:54:56
+	 * @since 3.0.0
+	 */
+	public static String parseTemplate(TemplateBean preTemplate, TemplateBean template, List<Symbol> symbols) {
+		// TODO 参数校验
+		// if (templateBean1 == null) {
+		// throw new NullPointerException("解析模板对象失败，因为模板对象为空！");
+		// }
+
+		// 模板内容准确性校验
+
+		//
+		template.setPreTemplate(preTemplate);
+
+		if (hasTemplateCode(template.getCode(), symbols)) {
+			while (hasTemplateCode(template.getCode(), symbols)) {
+				TemplateBean nextTemplate = getFirstTemplateSymbol(template.getCode(), symbols);
+				nextTemplate.setPreTemplate(template);
+
+				// 考虑多层模板嵌套的情况，使用递归进行处理
+				if (hasTemplateCode(nextTemplate.getCode(), symbols)) {
+					nextTemplate.setCode(parseTemplate(template, nextTemplate, symbols));
+				}
+
+				// 根据不同的模板符号进行不同的处理
+				for (Symbol oneSymbol : symbols) {
+					if (oneSymbol.getSymbolStart().equals(nextTemplate.getStartSymbol())) {
+
+						// 如果是变量标记，则设置变量为父模板对象的局部变量
+						if (oneSymbol instanceof ParamSymbol) {
+							Properties param = ((ParamSymbol) oneSymbol).parseParam(nextTemplate);
+							preTemplate.addLocalProperties(param);
+						} else {
+							String parsedCode = oneSymbol.parse(nextTemplate);
+
+							parsedCode = template.getCode().substring(0, nextTemplate.getStartIndex()) + parsedCode;
+							parsedCode = parsedCode + template.getCode()
+									.substring(nextTemplate.getEndIndex() + nextTemplate.getEndSymbol().length());
+
+							template.setCode(parsedCode);
+						}
+
+						// 退出循环
+						break;
+					}
+				}
+			}
+		}
+		
+		// 根据不同的模板符号进行不同的处理
+		for (Symbol oneSymbol : symbols) {
+			if (oneSymbol.getSymbolStart().equals(template.getStartSymbol())) {
+
+				// 如果是变量标记，则设置变量为父模板对象的局部变量
+				if (oneSymbol instanceof ParamSymbol) {
+					Properties param = ((ParamSymbol) oneSymbol).parseParam(template);
+					preTemplate.addLocalProperties(param);
+
+					// 变量标记要去除
+					template.setCode("");
+				} else {
+					template.setCode(oneSymbol.parse(template));
+				}
+
+				// 退出循环
+				break;
+			}
+		}
+
+		return template.getCode();
+	}
+
+	/**
+	 * 获取模板代码中的模板对象，模板对象中包含了模板代码及其位置等信息，若不存在则返回null
+	 * 
 	 * @param code 模板代码
 	 * @param symbols 标记集
-	 * @return 若不存在返回null
+	 * @return
 	 * @author freedom wang
 	 * @date 2017年6月23日上午10:02:02
 	 * @since 1.0
@@ -92,6 +164,7 @@ public class TemplateParser {
 
 	/**
 	 * 判断模板代码中是否存在待解析模板，若存在则返回true,否则返回false
+	 * 
 	 * @param code 模板代码
 	 * @param startSymbol 开始标记
 	 * @param endSymbol 结束标记
@@ -136,12 +209,13 @@ public class TemplateParser {
 	}
 
 	/**
-	 * 获取模板代码中指定标记的第一个模板对象
+	 * 获取模板代码中指定标记的第一个模板对象,若获取失败，返回null.
+	 * 
 	 * @param code 模板代码
 	 * @param fromIndex 开始位置
 	 * @param startSymbol 开始标记
 	 * @param endSymbol 结束标记
-	 * @return 若获取失败，返回null
+	 * @return
 	 * @author freedom wang
 	 * @date 2017年1月6日上午10:47:28
 	 * @since 1.0
@@ -169,21 +243,23 @@ public class TemplateParser {
 	}
 
 	/**
-	 * 获取第一个模板对象
-	 * @param string
-	 * @param fromIndex
-	 * @param symbol
+	 * 获取模板代码中指定标记的第一个模板对象,若获取失败，返回null。
+	 * 
+	 * @param code 模板代码
+	 * @param fromIndex 开始标记
+	 * @param symbol 标记对象
 	 * @return
 	 * @author freedom wang
 	 * @date 2017年6月23日上午10:00:24
 	 * @since 1.0
 	 */
-	public static TemplateBean getFirstTemplateBean(String string, int fromIndex, Symbol symbol) {
-		return getFirstTemplateBean(string, fromIndex, symbol.getSymbolStart(), symbol.getSymbolEnd());
+	public static TemplateBean getFirstTemplateBean(String code, int fromIndex, Symbol symbol) {
+		return getFirstTemplateBean(code, fromIndex, symbol.getSymbolStart(), symbol.getSymbolEnd());
 	}
 
 	/**
 	 * 获取模板代码中指定标记的第一个位置，若不存在开始标记或者不存在第一个开始标记匹配的结束标记，则返回-1。
+	 * 
 	 * @param code 模板代码
 	 * @param fromIndex 起始位置
 	 * @param startSymbol 开始标记
@@ -211,6 +287,7 @@ public class TemplateParser {
 
 	/**
 	 * 获取模板代码中指定标记的第一个位置，若不存在开始标记或者不存在第一个开始标记匹配的结束标记，则返回-1。
+	 * 
 	 * @param code 模板代码
 	 * @param fromIndex 起始位置
 	 * @param symbol 标记对象
@@ -245,6 +322,7 @@ public class TemplateParser {
 
 	/**
 	 * 移除已某标记开头的模板代码中，第一个标记部分
+	 * 
 	 * @param code
 	 * @param symbolBegin
 	 * @param symbolEnd
@@ -263,6 +341,7 @@ public class TemplateParser {
 
 	/**
 	 * 获取模板代码中结束标签所在的位置，若不存在则返回-1。
+	 * 
 	 * @param code 模板代码
 	 * @param fromIndex 模板代码的开始位置
 	 * @param startSymbol 开始标记
@@ -296,6 +375,7 @@ public class TemplateParser {
 
 	/**
 	 * 判断代码中的标记是开始标签近还是结束标签近
+	 * 
 	 * @param code 代码
 	 * @param fromIndex 开始位置
 	 * @param startSymbol 开始标签
@@ -322,6 +402,7 @@ public class TemplateParser {
 
 	/**
 	 * 判断代码中的标记是开始标签近还是结束标签近，并获取比较近的标签的位置
+	 * 
 	 * @param code 代码
 	 * @param fromIndex 开始位置
 	 * @param startSymbol 开始标签

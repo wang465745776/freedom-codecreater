@@ -1,6 +1,7 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import com.wanggt.freedom.codecreater.core.ValueOperate;
 import com.wanggt.freedom.codecreater.core.observer.HasOperate;
 import com.wanggt.freedom.codecreater.core.observer.HasParamParser;
 import com.wanggt.freedom.codecreater.core.operate.Operate;
+import com.wanggt.freedom.codecreater.core.parser.TemplateBean;
 import com.wanggt.freedom.codecreater.core.parser.TemplateParser;
 import com.wanggt.freedom.codecreater.param.ParamParser;
 import com.wanggt.freedom.codecreater.util.ProjectConfig;
@@ -72,13 +74,13 @@ public class ReplaceSymbol implements Symbol, HasOperate, HasParamParser {
 	}
 
 	@Override
-	public String parse(String code) {
-		String processCode = code;
+	public String parse(TemplateBean templateBean) {
+		String processCode = templateBean.getCode();
 		String returnValue = "";
 		String operate = "";
 
 		if (processCode == null || processCode.equals("")) {
-			logger.error("替换语句不能为空,默认忽略此替换语句,code:{}", code);
+			logger.error("替换语句不能为空,默认忽略此替换语句,code:{}", templateBean.getCode());
 			return returnValue.toString();
 		}
 
@@ -101,13 +103,25 @@ public class ReplaceSymbol implements Symbol, HasOperate, HasParamParser {
 				value = new DynamicJavaUtil().dynamicOneStatement(processCode);
 			} else {
 				// 根据变量，查找到变量值
-				value = paramParser.getParam(processCode);
+				String localValue = null;
+				TemplateBean linkBean = templateBean;
+				do {
+					Properties localProperties = linkBean.getLocalProperties();
+					localValue = localProperties.getProperty(processCode);
+					linkBean = linkBean.getPreTemplate();
+				} while (localValue == null && linkBean != null);
+
+				if (localValue == null) {
+					value = paramParser.getParam(processCode);
+				} else {
+					value = localValue;
+				}
 			}
 		} catch (Exception e) {
-			logger.error("替换语句解析或查询异常,默认忽略此替换语句,code:{}", code);
+			logger.error("替换语句解析或查询异常,默认忽略此替换语句,code:{}", templateBean.getCode());
 		}
 		if (value == null) {
-			logger.warn("替换语句查询不能为空,默认忽略此替换语句,code:{}", code);
+			logger.warn("替换语句查询不能为空,默认忽略此替换语句,code:{}", templateBean.getCode());
 		}
 		returnValue = value != null ? String.valueOf(value) : "";
 

@@ -93,9 +93,9 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 	}
 
 	@Override
-	public String parse(String code) {
+	public String parse(TemplateBean templateBean1) {
 		// 要操作的代码
-		String processCode = code;
+		String processCode = templateBean1.getCode();
 		// 定义一个变量用于保存最终生成的语句
 		StringBuffer returnValue = new StringBuffer();
 
@@ -119,11 +119,11 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 				try {
 					paramValue = paramParser.getParam(param);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
-					logger.error("获取循环参数失败,循环语句为：{},循环参数为：{}", code, param);
+					logger.error("获取循环参数失败,循环语句为：{},循环参数为：{}", templateBean1.getCode(), param);
 					logger.error("错误信息为：{}", e.getMessage());
 				}
 
-				// 如果循环参数的值为数组，则进行后续操作，否则提示错误
+				// 如果循环参数的值为数组，则进行后续操作，否则提示错误 TODO 这里需要扩展，不只是数组可以，比如List也应该可以
 				if (paramValue != null && paramValue.getClass().isArray()) {
 					// 定义一个变量用于临时保存循环语句，所有的操作都将在这个临时变量中进行
 					StringBuffer loopCode = new StringBuffer(processCode);
@@ -168,13 +168,13 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 								ValueOperate.dealValue(operate, returnValue.toString(), operates));
 					}
 				} else {
-					logger.warn("循环语句提供的循环参数为空或者不是数组，默认忽略此语句,循环语句为:{}", code);
+					logger.warn("循环语句提供的循环参数为空或者不是数组，默认忽略此语句,循环语句为:{}", templateBean1.getCode());
 				}
 			} else {
-				logger.warn("循环语句没有提供循环参数，默认忽略此循环语句,循环语句为:{}", code);
+				logger.warn("循环语句没有提供循环参数，默认忽略此循环语句,循环语句为:{}", templateBean1.getCode());
 			}
 		} else {
-			logger.warn("循环语句内容是空，默认忽略此循环语句,code:{}", code);
+			logger.warn("循环语句内容是空，默认忽略此循环语句,code:{}", templateBean1.getCode());
 		}
 
 		return returnValue.toString();

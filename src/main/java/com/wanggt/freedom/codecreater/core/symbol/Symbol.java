@@ -1,5 +1,7 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
+import com.wanggt.freedom.codecreater.core.parser.TemplateBean;
+
 /**
  * 每一种模板标记必须继承此接口
  * @author freedom wang
@@ -34,5 +36,5 @@ public interface Symbol {
 	 * @date 2017年6月22日下午10:21:36
 	 * @since 1.0
 	 */
-	String parse(String code);
+	String parse(TemplateBean templateBean);
 }
