@@ -18,6 +18,12 @@ creater.createCode(template, new Properties[] { baseProperties });
 ```
 
 ## 模板语法
+模板的语法分成了四个方面，分别是：
+- 数据绑定
+- 判断模板
+- 循环模板
+- 参数设置
+
 示例如下，这个一个生成POJO的模板
 ```
 /**
