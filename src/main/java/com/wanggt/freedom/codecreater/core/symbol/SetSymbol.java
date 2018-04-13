@@ -1,6 +1,6 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
-import java.util.Properties;
+import java.util.Hashtable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +56,13 @@ public class SetSymbol implements ParamSymbol {
 	}
 
 	@Override
-	public Properties parseParam(TemplateBean templateBean) {
+	public Hashtable<Object, Object> parseParam(TemplateBean templateBean) {
 		String parseCode = parse(templateBean);
 
 		String[] keyValue = parseCode.split("=");
 
-		Properties properties = new Properties();
-		properties.setProperty(keyValue[0], keyValue[1]);
+		Hashtable<Object, Object> properties = new Hashtable<>();
+		properties.put(keyValue[0], keyValue[1]);
 		return properties;
 	}
 }

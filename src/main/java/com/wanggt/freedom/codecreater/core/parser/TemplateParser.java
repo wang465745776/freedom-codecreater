@@ -1,7 +1,7 @@
 package com.wanggt.freedom.codecreater.core.parser;
 
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class TemplateParser {
 
 						// 如果是变量标记，则设置变量为父模板对象的局部变量
 						if (oneSymbol instanceof ParamSymbol) {
-							Properties param = ((ParamSymbol) oneSymbol).parseParam(nextTemplate);
+							Hashtable<Object, Object> param = ((ParamSymbol) oneSymbol).parseParam(nextTemplate);
 							preTemplate.addLocalProperties(param);
 						} else {
 							String parsedCode = oneSymbol.parse(nextTemplate);
@@ -111,7 +111,7 @@ public class TemplateParser {
 
 				// 如果是变量标记，则设置变量为父模板对象的局部变量
 				if (oneSymbol instanceof ParamSymbol) {
-					Properties param = ((ParamSymbol) oneSymbol).parseParam(template);
+					Hashtable<Object, Object> param = ((ParamSymbol) oneSymbol).parseParam(template);
 					preTemplate.addLocalProperties(param);
 
 					// 变量标记要去除

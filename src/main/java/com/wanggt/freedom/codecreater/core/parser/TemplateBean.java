@@ -1,6 +1,6 @@
 package com.wanggt.freedom.codecreater.core.parser;
 
-import java.util.Properties;
+import java.util.Hashtable;
 
 /**
  * 模板类，用于保存模板代码中待解析模板
@@ -21,13 +21,13 @@ public class TemplateBean {
 
 	private TemplateBean nextTemplate;
 
-	private Properties localProperties = new Properties();// 局部变量
+	private Hashtable<Object, Object> localProperties = new Hashtable<>();// 局部变量
 
-	public Properties getLocalProperties() {
+	public Hashtable<Object, Object> getLocalProperties() {
 		return localProperties;
 	}
 
-	public void setLocalProperties(Properties localProperties) {
+	public void setLocalProperties(Hashtable<Object, Object> localProperties) {
 		this.localProperties = localProperties;
 	}
 
@@ -38,7 +38,7 @@ public class TemplateBean {
 	 * @date 2018年4月13日下午12:36:11
 	 * @since 3.0.0
 	 */
-	public void addLocalProperties(Properties properties) {
+	public void addLocalProperties(Hashtable<Object, Object> properties) {
 		// 循环添加局部变量
 		for (Object key : properties.keySet()) {
 			this.localProperties.put(key, properties.get(key));

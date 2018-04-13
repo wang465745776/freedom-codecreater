@@ -115,7 +115,7 @@ public class BranchSymbol implements Symbol, HasOperate, HasParamParser {
 						judgmentResult = (boolean) (new DynamicJavaUtil().dynamicOneStatement(param));
 					} else {
 						// 根据变量，查找到变量值
-						judgmentResult = (boolean) paramParser.getParam(param);
+						judgmentResult = (boolean) paramParser.getParam(param, templateBean);
 					}
 				} catch (Exception e) {
 					judgmentResult = false;

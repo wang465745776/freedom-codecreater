@@ -20,8 +20,9 @@ public class CodeCreaterTest {
 
 		CodeCreaterTestBean bean = new CodeCreaterTestBean();
 		bean.setAuthor("freedom");
-		
-		bean.setStudents(new Student[] {new Student("freedom"),new Student("Tom")});
+
+		bean.setStudents(new Student[] { new Student("freedom"), new Student("Tom"), new Student("Job") });
+		bean.setStudent(new Student("王大叔"));
 
 		// 创建一个代码生成器
 		CodeCreater codeCreater = new CodeCreater();

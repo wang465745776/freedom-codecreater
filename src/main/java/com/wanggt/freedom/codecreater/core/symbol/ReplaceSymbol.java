@@ -1,7 +1,6 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,19 +102,7 @@ public class ReplaceSymbol implements Symbol, HasOperate, HasParamParser {
 				value = new DynamicJavaUtil().dynamicOneStatement(processCode);
 			} else {
 				// 根据变量，查找到变量值
-				String localValue = null;
-				TemplateBean linkBean = templateBean;
-				do {
-					Properties localProperties = linkBean.getLocalProperties();
-					localValue = localProperties.getProperty(processCode);
-					linkBean = linkBean.getPreTemplate();
-				} while (localValue == null && linkBean != null);
-
-				if (localValue == null) {
-					value = paramParser.getParam(processCode);
-				} else {
-					value = localValue;
-				}
+				value = paramParser.getParam(processCode, templateBean);
 			}
 		} catch (Exception e) {
 			logger.error("替换语句解析或查询异常,默认忽略此替换语句,code:{}", templateBean.getCode());

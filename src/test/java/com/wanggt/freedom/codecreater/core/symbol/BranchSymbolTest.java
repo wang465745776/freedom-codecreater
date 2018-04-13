@@ -1,23 +1,7 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.wanggt.freedom.codecreater.core.operate.DeleteLastCharOperate;
-import com.wanggt.freedom.codecreater.core.operate.FirstCharLowerCaseOperate;
-import com.wanggt.freedom.codecreater.core.operate.FirstCharOperate;
-import com.wanggt.freedom.codecreater.core.operate.FirstCharUpperCaseOperate;
-import com.wanggt.freedom.codecreater.core.operate.LowerCaseOperate;
-import com.wanggt.freedom.codecreater.core.operate.Operate;
-import com.wanggt.freedom.codecreater.core.operate.UpperCaseOperate;
-import com.wanggt.freedom.codecreater.param.ParamParser;
-import com.wanggt.freedom.codecreater.util.IOUtil;
 
 public class BranchSymbolTest {
 

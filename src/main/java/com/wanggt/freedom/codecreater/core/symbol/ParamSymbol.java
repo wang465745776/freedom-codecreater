@@ -1,6 +1,6 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
-import java.util.Properties;
+import java.util.Hashtable;
 
 import com.wanggt.freedom.codecreater.core.parser.TemplateBean;
 
@@ -20,5 +20,5 @@ public interface ParamSymbol extends Symbol{
 	 * @date 2018年4月13日上午11:40:30
 	 * @since 3.0.0
 	 */
-	Properties parseParam(TemplateBean templateBean);
+	Hashtable<Object, Object> parseParam(TemplateBean templateBean);
 }

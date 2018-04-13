@@ -15,6 +15,7 @@ public class CodeCreaterTemplate {
 	}
 }%}
 ##loop*(students)
-	private String ?{name}?;
+	private String ?{item.name}?;
 loop##
 ${age}
+${student.name}

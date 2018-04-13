@@ -1,6 +1,7 @@
 package com.wanggt.freedom.codecreater.core.symbol;
 
 import java.lang.reflect.Array;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -93,9 +94,9 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 	}
 
 	@Override
-	public String parse(TemplateBean templateBean1) {
+	public String parse(TemplateBean templateBean) {
 		// 要操作的代码
-		String processCode = templateBean1.getCode();
+		String processCode = templateBean.getCode();
 		// 定义一个变量用于保存最终生成的语句
 		StringBuffer returnValue = new StringBuffer();
 
@@ -104,7 +105,7 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 			String operate = "";
 			String param = "";
 
-			// 提取循环参数
+			// 提取循环参数，格式为(item,index) in items
 			param = TemplateParser.getSymbolContentStart(processCode, paramBegin, paramEnd);
 			processCode = TemplateParser.removeSymbolStart(processCode, paramBegin, paramEnd);
 
@@ -117,9 +118,9 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 				// 取得循环参数
 				Object paramValue = null;
 				try {
-					paramValue = paramParser.getParam(param);
+					paramValue = paramParser.getParam(param, templateBean);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
-					logger.error("获取循环参数失败,循环语句为：{},循环参数为：{}", templateBean1.getCode(), param);
+					logger.error("获取循环参数失败,循环语句为：{},循环参数为：{}", templateBean.getCode(), param);
 					logger.error("错误信息为：{}", e.getMessage());
 				}
 
@@ -134,27 +135,40 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 						// 判断循环语句中是否存在参数，若存在，则解析出参数的值
 						while (TemplateParser.hasTemplateCode(loopCode.toString(), arrayFieldBegin, arrayFieldEnd)) {
 							// 获取第一个模板信息
-							TemplateBean templateBean = TemplateParser.getFirstTemplateBean(loopCode.toString(), 0,
+							TemplateBean nextTemplate = TemplateParser.getFirstTemplateBean(loopCode.toString(), 0,
 									arrayFieldBegin, arrayFieldEnd);
+							nextTemplate.setPreTemplate(templateBean);
+
+							// 设置参数 TODO
+							Hashtable<Object, Object> localProperties = new Hashtable<>();
+							localProperties.put("item", Array.get(paramValue, i));
+							templateBean.setLocalProperties(localProperties);
 
 							String fieldOperate = "";
-							String arrayField = templateBean.getCode();// 获取数组中的对象的属性
+							String arrayField = nextTemplate.getCode();// 获取数组中的对象的属性
 
 							// 提取出数组字段的操作参数
 							fieldOperate = TemplateParser.getSymbolContentStart(arrayField, fieldOperateBegin,
 									fieldOperateEnd);
-							arrayField = TemplateParser.removeSymbolStart(arrayField, fieldOperateBegin, fieldOperateEnd);
+							arrayField = TemplateParser.removeSymbolStart(arrayField, fieldOperateBegin,
+									fieldOperateEnd);
 
 							// 取得数组指定索引对象的属性值
-							String fieldValue = getArrayProperty(paramValue, arrayField, i);
+							String fieldValue = null;
+							try {
+								fieldValue = (String) paramParser.getParam(arrayField,nextTemplate);
+							} catch (Exception e) {
+								logger.error("替换语句解析或查询异常,默认忽略此替换语句,code:{}", templateBean.getCode());
+							}
+							 
 
 							// 对求出的属性值进行操作处理
 							if (fieldValue != null && fieldValue.length() > 0 && !fieldOperate.equals("")) {
 								fieldValue = ValueOperate.dealValue(fieldOperate, fieldValue, operates);
 							}
 
-							loopCode.replace(templateBean.getStartIndex(), templateBean.getEndIndex()
-									+ templateBean.getEndSymbol().length(), fieldValue);
+							loopCode.replace(nextTemplate.getStartIndex(),
+									nextTemplate.getEndIndex() + nextTemplate.getEndSymbol().length(), fieldValue);
 						}
 
 						// 将解析后的循环语句保存到最终语句中
@@ -168,13 +182,13 @@ public class LoopSymbol implements Symbol, HasParamParser, HasOperate {
 								ValueOperate.dealValue(operate, returnValue.toString(), operates));
 					}
 				} else {
-					logger.warn("循环语句提供的循环参数为空或者不是数组，默认忽略此语句,循环语句为:{}", templateBean1.getCode());
+					logger.warn("循环语句提供的循环参数为空或者不是数组，默认忽略此语句,循环语句为:{}", templateBean.getCode());
 				}
 			} else {
-				logger.warn("循环语句没有提供循环参数，默认忽略此循环语句,循环语句为:{}", templateBean1.getCode());
+				logger.warn("循环语句没有提供循环参数，默认忽略此循环语句,循环语句为:{}", templateBean.getCode());
 			}
 		} else {
-			logger.warn("循环语句内容是空，默认忽略此循环语句,code:{}", templateBean1.getCode());
+			logger.warn("循环语句内容是空，默认忽略此循环语句,code:{}", templateBean.getCode());
 		}
 
 		return returnValue.toString();

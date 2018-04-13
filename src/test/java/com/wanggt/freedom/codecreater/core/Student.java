@@ -20,5 +20,10 @@ public class Student {
 	public Student() {
 		super();
 	}
+	
+	@Override
+	public String toString() {
+		return "我的名字叫："+ this.name;
+	}
 
 }
